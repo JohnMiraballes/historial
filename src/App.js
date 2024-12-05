@@ -3,7 +3,7 @@ import InputForm from "./Components/InputForm";
 import TrainModelButton from "./Components/TrainModelButton";
 import PredictionTable from "./Components/PredictionTable";
 import ChartVisualization from "./Components/ChartVisualization";
-
+import './App.css'; // Import new CSS styles
 
 const App = () => {
   const [data, setData] = useState([]);
@@ -11,9 +11,15 @@ const App = () => {
   const [predictions, setPredictions] = useState([]);
 
   return (
-    <div className="container mt-3">
+    <div className="container">
       <h1>Course Section Forecasting</h1>
-      <InputForm onDataSubmit={(d, m) => { setData(d); setMaxStudents(m); }} />
+      
+      {/* Input Form Section */}
+      <div className="form-container">
+        <InputForm onDataSubmit={(d, m) => { setData(d); setMaxStudents(m); }} />
+      </div>
+
+      {/* Model Training and Prediction Section */}
       {data.length > 0 && (
         <>
           <TrainModelButton
@@ -23,8 +29,15 @@ const App = () => {
           />
           {predictions.length > 0 && (
             <>
-              <PredictionTable data={data} predictions={predictions} />
-              <ChartVisualization data={data} predictions={predictions} />
+              {/* Prediction Table */}
+              <div className="table-container">
+                <PredictionTable data={data} predictions={predictions} />
+              </div>
+
+              {/* Chart Visualization */}
+              <div className="chart-container">
+                <ChartVisualization data={data} predictions={predictions} />
+              </div>
             </>
           )}
         </>
