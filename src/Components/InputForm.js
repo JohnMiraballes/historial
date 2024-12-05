@@ -1,22 +1,26 @@
 import React, { useState } from "react";
+import Papa from "papaparse"; // Install this library: npm install papaparse
 
 const InputForm = ({ onDataSubmit }) => {
-  const [data, setData] = useState([
-    { semester: "2022-2", courseCode: "ITE102", totalStudents: 90 },
-    { semester: "2023-1", courseCode: "CCS101", totalStudents: 90 },
-    { semester: "2023-4", courseCode: "ITE102", totalStudents: 120 },
-    { semester: "2024-1", courseCode: "CCS101", totalStudents: 100 },
-  ]);
+  const [data, setData] = useState([]);
   const [maxStudents, setMaxStudents] = useState(30);
 
-  const handleAddRow = () => {
-    setData([...data, { semester: "", courseCode: "", totalStudents: 0 }]);
-  };
-
-  const handleInputChange = (index, field, value) => {
-    const newData = [...data];
-    newData[index][field] = value;
-    setData(newData);
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (result) => {
+          const csvData = result.data.map((row) => ({
+            semester: row["Semester"] || "",
+            courseCode: row["Course Code"] || "",
+            totalStudents: parseInt(row["Total Students"], 10) || 0,
+          }));
+          setData(csvData);
+        },
+      });
+    }
   };
 
   const handleSubmit = (e) => {
@@ -27,6 +31,7 @@ const InputForm = ({ onDataSubmit }) => {
   return (
     <form onSubmit={handleSubmit} className="p-3">
       <h4>Input Historical Enrollment Data</h4>
+      <input type="file" accept=".csv" onChange={handleFileUpload} className="mb-3" />
       <table className="table table-bordered">
         <thead>
           <tr>
@@ -42,7 +47,13 @@ const InputForm = ({ onDataSubmit }) => {
                 <input
                   type="text"
                   value={row.semester}
-                  onChange={(e) => handleInputChange(index, "semester", e.target.value)}
+                  onChange={(e) =>
+                    setData((prevData) => {
+                      const newData = [...prevData];
+                      newData[index].semester = e.target.value;
+                      return newData;
+                    })
+                  }
                   className="form-control"
                 />
               </td>
@@ -50,7 +61,13 @@ const InputForm = ({ onDataSubmit }) => {
                 <input
                   type="text"
                   value={row.courseCode}
-                  onChange={(e) => handleInputChange(index, "courseCode", e.target.value)}
+                  onChange={(e) =>
+                    setData((prevData) => {
+                      const newData = [...prevData];
+                      newData[index].courseCode = e.target.value;
+                      return newData;
+                    })
+                  }
                   className="form-control"
                 />
               </td>
@@ -58,7 +75,13 @@ const InputForm = ({ onDataSubmit }) => {
                 <input
                   type="number"
                   value={row.totalStudents}
-                  onChange={(e) => handleInputChange(index, "totalStudents", e.target.value)}
+                  onChange={(e) =>
+                    setData((prevData) => {
+                      const newData = [...prevData];
+                      newData[index].totalStudents = e.target.value;
+                      return newData;
+                    })
+                  }
                   className="form-control"
                 />
               </td>
@@ -66,15 +89,12 @@ const InputForm = ({ onDataSubmit }) => {
           ))}
         </tbody>
       </table>
-      <button type="button" onClick={handleAddRow} className="btn btn-secondary mb-3">
-        Add Row
-      </button>
       <div className="mb-3">
         <label>Max Students Per Section:</label>
         <input
           type="number"
           value={maxStudents}
-          onChange={(e) => setMaxStudents(e.target.value)}
+          onChange={(e) => setMaxStudents(parseInt(e.target.value, 10))}
           className="form-control"
         />
       </div>
