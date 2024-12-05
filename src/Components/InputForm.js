@@ -9,6 +9,16 @@ const InputForm = ({ onDataSubmit }) => {
   ]);
   const [maxStudents, setMaxStudents] = useState(30);
 
+  const handleAddRow = () => {
+    setData([...data, { semester: "", courseCode: "", totalStudents: 0 }]);
+  };
+
+  const handleInputChange = (index, field, value) => {
+    const newData = [...data];
+    newData[index][field] = value;
+    setData(newData);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     onDataSubmit(data, maxStudents);
@@ -28,13 +38,37 @@ const InputForm = ({ onDataSubmit }) => {
         <tbody>
           {data.map((row, index) => (
             <tr key={index}>
-              <td>{row.semester}</td>
-              <td>{row.courseCode}</td>
-              <td>{row.totalStudents}</td>
+              <td>
+                <input
+                  type="text"
+                  value={row.semester}
+                  onChange={(e) => handleInputChange(index, "semester", e.target.value)}
+                  className="form-control"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  value={row.courseCode}
+                  onChange={(e) => handleInputChange(index, "courseCode", e.target.value)}
+                  className="form-control"
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  value={row.totalStudents}
+                  onChange={(e) => handleInputChange(index, "totalStudents", e.target.value)}
+                  className="form-control"
+                />
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
+      <button type="button" onClick={handleAddRow} className="btn btn-secondary mb-3">
+        Add Row
+      </button>
       <div className="mb-3">
         <label>Max Students Per Section:</label>
         <input
