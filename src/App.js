@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import InputForm from "./Components/InputForm";
+import TrainModelButton from "./Components/TrainModelButton";
+import PredictionTable from "./Components/PredictionTable";
+import ChartVisualization from "./Components/ChartVisualization";
 
-function App() {
+
+const App = () => {
+  const [data, setData] = useState([]);
+  const [maxStudents, setMaxStudents] = useState(30);
+  const [predictions, setPredictions] = useState([]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container mt-3">
+      <h1>Course Section Forecasting</h1>
+      <InputForm onDataSubmit={(d, m) => { setData(d); setMaxStudents(m); }} />
+      {data.length > 0 && (
+        <>
+          <TrainModelButton
+            data={data}
+            maxStudents={maxStudents}
+            onModelTrained={setPredictions}
+          />
+          {predictions.length > 0 && (
+            <>
+              <PredictionTable data={data} predictions={predictions} />
+              <ChartVisualization data={data} predictions={predictions} />
+            </>
+          )}
+        </>
+      )}
     </div>
   );
-}
+};
 
 export default App;
